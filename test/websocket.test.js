@@ -399,12 +399,12 @@ describe('WebSocket', function () {
       });
     });
 
-    it("emits a 'headers' event", function (done) {
+    it("emits an 'upgrade' event", function (done) {
       const wss = new WebSocket.Server({ port: 0 }, () => {
         const port = wss._server.address().port;
         const ws = new WebSocket(`ws://localhost:${port}`);
-        ws.on('headers', (headers, res) => {
-          assert.strictEqual(headers, res.headers);
+        ws.on('upgrade', (res) => {
+          assert.ok(res instanceof http.IncomingMessage);
           wss.close(done);
         });
       });
@@ -1173,7 +1173,7 @@ describe('WebSocket', function () {
       });
     });
 
-    it('can be called from a listener of the headers event', function (done) {
+    it("can be called from a listener of the 'upgrade' event", function (done) {
       const wss = new WebSocket.Server({ port: 0 }, () => {
         const port = wss._server.address().port;
         const ws = new WebSocket(`ws://localhost:${port}`);
@@ -1184,7 +1184,7 @@ describe('WebSocket', function () {
           assert.strictEqual(err.message, 'Closed before the connection is established');
           ws.on('close', () => wss.close(done));
         });
-        ws.on('headers', () => ws.close());
+        ws.on('upgrade', () => ws.close());
       });
     });
 
@@ -1437,7 +1437,7 @@ describe('WebSocket', function () {
       });
     });
 
-    it('can be called from a listener of the headers event', function (done) {
+    it("can be called from a listener of the 'upgrade' event", function (done) {
       const wss = new WebSocket.Server({ port: 0 }, () => {
         const port = wss._server.address().port;
         const ws = new WebSocket(`ws://localhost:${port}`);
@@ -1448,7 +1448,7 @@ describe('WebSocket', function () {
           assert.strictEqual(err.message, 'Closed before the connection is established');
           ws.on('close', () => wss.close(done));
         });
-        ws.on('headers', () => ws.terminate());
+        ws.on('upgrade', () => ws.terminate());
       });
     });
 
